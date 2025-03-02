@@ -8,11 +8,6 @@ on:
     branches:
       - main  # Se ejecuta en PRs hacia main
 
-env:
-  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-  KUBECONFIG: ${{ secrets.KUBECONFIG }}
-
 jobs:
   build:
     name: Build & Push Docker Image
@@ -25,8 +20,8 @@ jobs:
       - name: Login en Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: "${{ secrets.DOCKERHUB_USERNAME }}"
+          password: "${{ secrets.DOCKERHUB_PASSWORD }}"
 
       - name: Construir y subir imagen Docker
         run: |
@@ -44,8 +39,8 @@ jobs:
 
       - name: Configurar kubectl
         run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig
-          export KUBECONFIG=kubeconfig
+          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
+          export KUBECONFIG=$HOME/.kube/config
 
       - name: Actualizar manifiestos y desplegar en Kubernetes
         run: |
